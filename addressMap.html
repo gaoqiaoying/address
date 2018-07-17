@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <style type="text/css">
+    body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";font-size:14px;}
+    #allmap {width:100%;height:100%;}
+  </style>
+  <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=你的AK"></script>
+  <title></title>
+</head>
+<body>
+  <div id="allmap"></div>
+<script type="text/javascript">
+	//自动定位
+    var lng,lat;
+    var map = new BMap.Map("allmap");
+    var point = new BMap.Point(104.098225,30.56028);
+    map.centerAndZoom(point,12);
+    var geolocation = new BMap.Geolocation();
+    geolocation.getCurrentPosition(function(r){
+        if(this.getStatus() == BMAP_STATUS_SUCCESS){
+            var mk = new BMap.Marker(r.point);
+            map.addOverlay(mk);
+            map.panTo(r.point);
+            lng=r.point.lng;
+            lat=r.point.lat;
+            point = new BMap.Point(lng,lat);
+            console.log('您的位置：'+r.point.lng+','+r.point.lat);
+                map_click(lng,lat);
+
+        }
+        else {
+            console.log('failed'+this.getStatus());
+        }
+    });
+    //根据经纬度转换成地址
+    function map_click(lng,lat){
+        var map1 = new BMap.Map("allmap");
+        var point = new BMap.Point(lng,lat);
+        map1.centerAndZoom(point,12);
+        var geoc = new BMap.Geocoder();
+        geoc.getLocation(point,function(rs){
+            var addComp = rs.addressComponents;
+            alert(addComp.province + "," + addComp.city + "," + addComp.district + "," + addComp.street + "," + addComp.streetNumber);
+            //赋值到注册页的所在区域
+            $(".locationCoun").html(addComp.district);
+        });
+    }
+</script>
+</body>
+</html>
